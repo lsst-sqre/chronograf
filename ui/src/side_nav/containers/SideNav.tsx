@@ -4,6 +4,7 @@ import {withRouter, Link} from 'react-router'
 import {connect} from 'react-redux'
 
 import Authorized, {ADMIN_ROLE} from 'src/auth/Authorized'
+import Authorized, {EDITOR_ROLE} from 'src/auth/Authorized'
 
 import UserNavBlock from 'src/side_nav/components/UserNavBlock'
 
@@ -68,6 +69,10 @@ class SideNav extends PureComponent<Props> {
             <span className="sidebar--icon icon cubo-uniform" />
           </Link>
         </div>
+        <Authorized
+        requiredRole={ADMIN_ROLE}
+        replaceWithIfNotUsingAuth={}
+        >
         <NavBlock
           highlightWhen={['hosts']}
           icon="eye"
@@ -76,6 +81,7 @@ class SideNav extends PureComponent<Props> {
         >
           <NavHeader link={`${sourcePrefix}/hosts`} title="Host List" />
         </NavBlock>
+        </Authorized>
         <NavBlock
           highlightWhen={['data-explorer']}
           icon="graphline-2"
@@ -92,6 +98,10 @@ class SideNav extends PureComponent<Props> {
         >
           <NavHeader link={`${sourcePrefix}/dashboards`} title="Dashboards" />
         </NavBlock>
+        <Authorized
+          requiredRole={EDITOR_ROLE}
+          replaceWithIfNotUsingAuth={}
+          >
         <NavBlock
           highlightWhen={['alerts', 'alert-rules', 'tickscript']}
           icon="alerts"
@@ -106,6 +116,7 @@ class SideNav extends PureComponent<Props> {
             Alert History
           </NavListItem>
         </NavBlock>
+      </Authorized>
 
         <NavBlock
           highlightWhen={['logs']}
@@ -130,6 +141,18 @@ class SideNav extends PureComponent<Props> {
                 title="InfluxDB Admin"
               />
             </NavBlock>
+
+            <NavBlock
+              highlightWhen={['manage-sources', 'kapacitors']}
+              icon="wrench"
+              link={`${sourcePrefix}/manage-sources`}
+              location={location}
+            >
+              <NavHeader
+                link={`${sourcePrefix}/manage-sources`}
+                title="Configuration"
+              />
+            </NavBlock>
           }
         >
           <NavBlock
@@ -151,7 +174,6 @@ class SideNav extends PureComponent<Props> {
               InfluxDB
             </NavListItem>
           </NavBlock>
-        </Authorized>
         <NavBlock
           highlightWhen={['manage-sources', 'kapacitors']}
           icon="wrench"
@@ -163,6 +185,7 @@ class SideNav extends PureComponent<Props> {
             title="Configuration"
           />
         </NavBlock>
+        </Authorized>
         {isUsingAuth ? (
           <UserNavBlock
             logoutLink={logoutLink}
