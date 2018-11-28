@@ -4,6 +4,7 @@ import {withRouter, Link} from 'react-router'
 import {connect} from 'react-redux'
 
 import Authorized, {ADMIN_ROLE} from 'src/auth/Authorized'
+import Authorized, {EDITOR_ROLE} from 'src/auth/Authorized'
 
 import UserNavBlock from 'src/side_nav/components/UserNavBlock'
 
@@ -68,6 +69,10 @@ class SideNav extends PureComponent<Props> {
             <span className="sidebar--icon icon cubo-uniform" />
           </Link>
         </div>
+        <Authorized
+        requiredRole={ADMIN_ROLE}
+        replaceWithIfNotUsingAuth={}
+        >
         <NavBlock
           highlightWhen={['hosts']}
           icon="eye"
@@ -75,6 +80,15 @@ class SideNav extends PureComponent<Props> {
           location={location}
         >
           <NavHeader link={`${sourcePrefix}/hosts`} title="Host List" />
+        </NavBlock>
+        </Authorized>
+        <NavBlock
+          highlightWhen={['dashboards']}
+          icon="dash-j"
+          link={`${sourcePrefix}/dashboards`}
+          location={location}
+        >
+          <NavHeader link={`${sourcePrefix}/dashboards`} title="Dashboards" />
         </NavBlock>
         <NavBlock
           highlightWhen={['data-explorer']}
@@ -84,14 +98,10 @@ class SideNav extends PureComponent<Props> {
         >
           <NavHeader link={dataExplorerLink} title="Explore" />
         </NavBlock>
-        <NavBlock
-          highlightWhen={['dashboards']}
-          icon="dash-j"
-          link={`${sourcePrefix}/dashboards`}
-          location={location}
-        >
-          <NavHeader link={`${sourcePrefix}/dashboards`} title="Dashboards" />
-        </NavBlock>
+      <Authorized
+          requiredRole={EDITOR_ROLE}
+          replaceWithIfNotUsingAuth={}
+          >
         <NavBlock
           highlightWhen={['alerts', 'alert-rules', 'tickscript']}
           icon="alerts"
@@ -106,7 +116,10 @@ class SideNav extends PureComponent<Props> {
             Alert History
           </NavListItem>
         </NavBlock>
-
+      </Authorized>
+      <Authorized
+        requiredRole={ADMIN_ROLE}
+        replaceWithIfNotUsingAuth={
         <NavBlock
           highlightWhen={['logs']}
           icon="wood"
@@ -115,7 +128,17 @@ class SideNav extends PureComponent<Props> {
         >
           <NavHeader link={'/logs'} title="Log Viewer" />
         </NavBlock>
-
+        }
+      >
+        <NavBlock
+          highlightWhen={['logs']}
+          icon="wood"
+          link="/logs"
+          location={location}
+        >
+          <NavHeader link={'/logs'} title="Log Viewer" />
+        </NavBlock>
+      </Authorized>
         <Authorized
           requiredRole={ADMIN_ROLE}
           replaceWithIfNotUsingAuth={
@@ -152,6 +175,22 @@ class SideNav extends PureComponent<Props> {
             </NavListItem>
           </NavBlock>
         </Authorized>
+        <Authorized
+          requiredRole={ADMIN_ROLE}
+          replaceWithIfNotUsingAuth={
+          <NavBlock
+            highlightWhen={['manage-sources', 'kapacitors']}
+            icon="wrench"
+            link={`${sourcePrefix}/manage-sources`}
+            location={location}
+          >
+            <NavHeader
+              link={`${sourcePrefix}/manage-sources`}
+              title="Configuration"
+            />
+          </NavBlock>
+        }
+        >
         <NavBlock
           highlightWhen={['manage-sources', 'kapacitors']}
           icon="wrench"
@@ -163,6 +202,7 @@ class SideNav extends PureComponent<Props> {
             title="Configuration"
           />
         </NavBlock>
+        </Authorized>
         {isUsingAuth ? (
           <UserNavBlock
             logoutLink={logoutLink}

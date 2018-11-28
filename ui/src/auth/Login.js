@@ -17,7 +17,12 @@ const Login = ({authData: {auth}}) => {
     <div>
       <Notifications />
       <SplashPage>
-        <h1 className="auth-text-logo">Chronograf</h1>
+        <h1>SQuaSH</h1>
+        <h4>A QC Service by LSST DM/SQuaRE</h4>
+        <p>
+        powered by
+        </p>
+        <h2>Chronograf</h2>
         <p>
           <strong>{VERSION}</strong> / Time-Series Data Visualization
         </p>

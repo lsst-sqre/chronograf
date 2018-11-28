@@ -13,6 +13,9 @@ LDFLAGS=-ldflags "-s -X main.version=${VERSION} -X main.commit=${COMMIT}"
 BINARY=chronograf
 CTLBINARY=chronoctl
 
+IMAGE=lsstsqre/${BINARY}
+IMAGE_TAG=latest
+
 .DEFAULT_GOAL := all
 
 all: dep build
@@ -42,7 +45,8 @@ docker-${BINARY}: $(SOURCES)
 		./cmd/chronograf/main.go
 
 docker: dep assets docker-${BINARY}
-	docker build -t chronograf .
+	docker build -t ${IMAGE}:${IMAGE_TAG} .
+	docker push ${IMAGE}:${IMAGE_TAG}
 
 assets: .jssrc .bindata
 
@@ -57,7 +61,7 @@ server/swagger_gen.go: server/swagger.json
 
 canned/bin_gen.go: canned/*.json
 	go generate -x ./canned
-	
+
 protoboards/bin_gen.go: protoboards/*.json
 	go generate -x ./protoboards
 

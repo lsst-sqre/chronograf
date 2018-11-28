@@ -424,7 +424,7 @@ export const PREDEFINED_TEMP_VARS = [
 export const INITIAL_GROUP_BY_TIME = '10s'
 export const AUTO_GROUP_BY = 'auto'
 
-export const DEFAULT_HOME_PAGE = 'status'
+export const DEFAULT_HOME_PAGE = 'dashboards'
 
 export const STATUS_PAGE_ROW_COUNT = 10 // TODO: calculate based on actual Status Page cells
 export const PAGE_HEADER_HEIGHT = 60 // TODO: get this dynamically to ensure longevity
