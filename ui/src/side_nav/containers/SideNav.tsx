@@ -83,14 +83,6 @@ class SideNav extends PureComponent<Props> {
         </NavBlock>
         </Authorized>
         <NavBlock
-          highlightWhen={['data-explorer']}
-          icon="graphline-2"
-          link={dataExplorerLink}
-          location={location}
-        >
-          <NavHeader link={dataExplorerLink} title="Explore" />
-        </NavBlock>
-        <NavBlock
           highlightWhen={['dashboards']}
           icon="dash-j"
           link={`${sourcePrefix}/dashboards`}
@@ -98,7 +90,15 @@ class SideNav extends PureComponent<Props> {
         >
           <NavHeader link={`${sourcePrefix}/dashboards`} title="Dashboards" />
         </NavBlock>
-        <Authorized
+        <NavBlock
+          highlightWhen={['data-explorer']}
+          icon="graphline-2"
+          link={dataExplorerLink}
+          location={location}
+        >
+          <NavHeader link={dataExplorerLink} title="Explore" />
+        </NavBlock>
+      <Authorized
           requiredRole={EDITOR_ROLE}
           replaceWithIfNotUsingAuth={}
           >
@@ -117,7 +117,9 @@ class SideNav extends PureComponent<Props> {
           </NavListItem>
         </NavBlock>
       </Authorized>
-
+      <Authorized
+        requiredRole={ADMIN_ROLE}
+        replaceWithIfNotUsingAuth={
         <NavBlock
           highlightWhen={['logs']}
           icon="wood"
@@ -126,7 +128,17 @@ class SideNav extends PureComponent<Props> {
         >
           <NavHeader link={'/logs'} title="Log Viewer" />
         </NavBlock>
-
+        }
+      >
+        <NavBlock
+          highlightWhen={['logs']}
+          icon="wood"
+          link="/logs"
+          location={location}
+        >
+          <NavHeader link={'/logs'} title="Log Viewer" />
+        </NavBlock>
+      </Authorized>
         <Authorized
           requiredRole={ADMIN_ROLE}
           replaceWithIfNotUsingAuth={
@@ -139,18 +151,6 @@ class SideNav extends PureComponent<Props> {
               <NavHeader
                 link={`${sourcePrefix}/admin-influxdb/databases`}
                 title="InfluxDB Admin"
-              />
-            </NavBlock>
-
-            <NavBlock
-              highlightWhen={['manage-sources', 'kapacitors']}
-              icon="wrench"
-              link={`${sourcePrefix}/manage-sources`}
-              location={location}
-            >
-              <NavHeader
-                link={`${sourcePrefix}/manage-sources`}
-                title="Configuration"
               />
             </NavBlock>
           }
@@ -174,6 +174,23 @@ class SideNav extends PureComponent<Props> {
               InfluxDB
             </NavListItem>
           </NavBlock>
+        </Authorized>
+        <Authorized
+          requiredRole={ADMIN_ROLE}
+          replaceWithIfNotUsingAuth={
+          <NavBlock
+            highlightWhen={['manage-sources', 'kapacitors']}
+            icon="wrench"
+            link={`${sourcePrefix}/manage-sources`}
+            location={location}
+          >
+            <NavHeader
+              link={`${sourcePrefix}/manage-sources`}
+              title="Configuration"
+            />
+          </NavBlock>
+        }
+        >
         <NavBlock
           highlightWhen={['manage-sources', 'kapacitors']}
           icon="wrench"
