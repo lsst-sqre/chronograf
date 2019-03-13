@@ -41,6 +41,31 @@ export const functions: FluxToolbarFunction[] = [
       'https://docs.influxdata.com/flux/latest/functions/transformations/aggregates/aggregatewindow',
   },
   {
+    name: 'assertEquals',
+    args: [
+      {
+        name: 'name',
+        desc: 'Unique name given to the assertion.',
+        type: 'String',
+      },
+      {
+        name: 'got',
+        desc: 'The stream containing data to test.',
+        type: 'Object',
+      },
+      {
+        name: 'want',
+        desc: 'The stream that contains the expected data to test against.',
+        type: 'Object',
+      },
+    ],
+    desc: 'Tests whether two streams have identical data.',
+    example: 'assertEquals(got: got, want: want)',
+    category: 'Test',
+    link:
+      'https://docs.influxdata.com/flux/latest/functions/tests/assertequals',
+  },
+  {
     name: 'bottom',
     args: [
       {
@@ -90,12 +115,12 @@ export const functions: FluxToolbarFunction[] = [
     args: [
       {
         name: 'x',
-        desc: 'First input stream used to calculate the covariance.',
+        desc: 'One input stream used to calculate the covariance.',
         type: 'Object',
       },
       {
         name: 'y',
-        desc: 'Second input stream used to calculate the covariance.',
+        desc: 'The other input table used to calculate the covariance.',
         type: 'Object',
       },
       {
@@ -325,52 +350,128 @@ export const functions: FluxToolbarFunction[] = [
     link: 'https://docs.influxdata.com/flux/latest/functions/inputs/from',
   },
   {
-    name: 'fromRows',
+    name: 'fromCSV',
     args: [
       {
-        name: 'bucket',
-        desc: 'The name of the bucket to query.',
+        name: 'file',
+        desc: 'The file path of the CSV file to query.',
         type: 'String',
       },
       {
-        name: 'bucketID',
-        desc: 'The string-encoded ID of the bucket to query.',
+        name: 'csv',
+        desc:
+          'Raw CSV-formatted text. CSV data must be in the CSV format produced by the Flux HTTP response standard.',
         type: 'String',
       },
     ],
-    desc:
-      'This is a special application of the `pivot()` function that will automatically align fields within each measurement that have the same timestamp.',
-    example: 'fromRows(bucket: "bucket-name")',
+    desc: 'Retrieves data from a comma-separated value (CSV) data source.',
+    example: 'fromCSV(file: "/path/to/data-file.csv")',
     category: 'Inputs',
-    link: 'https://docs.influxdata.com/flux/latest/functions/inputs/fromrows',
+    link: 'https://docs.influxdata.com/flux/latest/functions/inputs/fromcsv',
   },
   {
     name: 'group',
     args: [
       {
-        name: 'by',
+        name: 'columns',
         desc:
-          'List of columns by which to group. Cannot be used with `except`.',
+          'List of columns to use in the grouping operation. Defaults to `[]`.',
         type: 'Array of Strings',
       },
       {
-        name: 'except',
+        name: 'mode',
         desc:
-          'List of columns by which to NOT group. All other columns are used to group records. Cannot be used with `by`.',
-        type: 'Array of Strings',
-      },
-      {
-        name: 'none',
-        desc: 'Remove existing groups.',
-        type: 'Boolean',
+          'The mode used to group columns. The following options are available: by, except. Defaults to `"by"`.',
+        type: 'String',
       },
     ],
     desc:
       'Groups records based on their values for specific columns. It produces tables with new group keys based on provided properties.',
-    example: 'group(by: ["host", "_measurement"])',
+    example: 'group(columns: ["host", "_measurement"], mode:"by")',
     category: 'Transformations',
     link:
       'https://docs.influxdata.com/flux/latest/functions/transformations/group',
+  },
+  {
+    name: 'highestAverage',
+    args: [
+      {
+        name: 'n',
+        desc: 'Number of records to return.',
+        type: 'Integer',
+      },
+      {
+        name: 'columns',
+        desc: 'List of columns by which to sort. Default is `["_value"]`.',
+        type: 'Array of Strings',
+      },
+      {
+        name: 'groupColumns',
+        desc:
+          'The columns on which to group before performing the aggregation. Default is `[]`.',
+        type: 'Array of Strings',
+      },
+    ],
+    desc:
+      'Returns the top `n` records from all groups using the average of each group.',
+    example: 'highestAverage(n:10, groupColumns: ["host"])',
+    category: 'Selectors',
+    link:
+      'https://docs.influxdata.com/flux/latest/functions/transformations/selectors/highestaverage',
+  },
+  {
+    name: 'highestCurrent',
+    args: [
+      {
+        name: 'n',
+        desc: 'Number of records to return.',
+        type: 'Integer',
+      },
+      {
+        name: 'columns',
+        desc: 'List of columns by which to sort. Default is `["_value"]`.',
+        type: 'Array of Strings',
+      },
+      {
+        name: 'groupColumns',
+        desc:
+          'The columns on which to group before performing the aggregation. Default is `[]`.',
+        type: 'Array of Strings',
+      },
+    ],
+    desc:
+      'Returns the top `n` records from all groups using the last value of each group.',
+    example: 'highestCurrent(n:10, groupColumns: ["host"])',
+    category: 'Selectors',
+    link:
+      'https://docs.influxdata.com/flux/latest/functions/transformations/selectors/highestcurrent',
+  },
+  {
+    name: 'highestMax',
+    args: [
+      {
+        name: 'n',
+        desc: 'Number of records to return.',
+        type: 'Integer',
+      },
+      {
+        name: 'columns',
+        desc: 'List of columns by which to sort. Default is `["_value"]`.',
+        type: 'Array of Strings',
+      },
+      {
+        name: 'groupColumns',
+        desc:
+          'The columns on which to group before performing the aggregation. Default is `[]`.',
+        type: 'Array of Strings',
+      },
+    ],
+    desc:
+      'Returns the top `n` records from all groups using the maximum of each group.',
+    example: 'highestMax(n:10, groupColumns: ["host"])',
+    category: 'Selectors',
+    link:
+      'https://docs.influxdata.com/flux/latest/functions/transformations/selectors/highestmax',
   },
   {
     name: 'histogram',
@@ -394,9 +495,9 @@ export const functions: FluxToolbarFunction[] = [
         type: 'String',
       },
       {
-        name: 'buckets',
+        name: 'bins',
         desc:
-          'A list of upper bounds to use when computing the histogram frequencies. Buckets should contain a bucket whose bound is the maximum value of the data set. This value can be set to positive infinity if no maximum is known.',
+          'A list of upper bounds to use when computing the histogram frequencies. Each element in the array should contain a float value that represents the maximum value for a bin.',
         type: 'Array of Floats',
       },
       {
@@ -409,7 +510,7 @@ export const functions: FluxToolbarFunction[] = [
     desc:
       'Approximates the cumulative distribution function of a dataset by counting data frequencies for a list of buckets.',
     example:
-      'histogram(column: "_value", upperBoundColumn: "le", countColumn: "_value", buckets: [50.0, 75.0, 90.0], normalize: false)',
+      'histogram(column: "_value", upperBoundColumn: "le", countColumn: "_value", bins: [50.0, 75.0, 90.0], normalize: false)',
     category: 'Transformations',
     link:
       'https://docs.influxdata.com/flux/latest/functions/transformations/histogram',
@@ -472,6 +573,16 @@ export const functions: FluxToolbarFunction[] = [
     category: 'Aggregates',
     link:
       'https://docs.influxdata.com/flux/latest/functions/transformations/aggregates/increase',
+  },
+  {
+    name: 'influxFieldsAsCols',
+    args: [],
+    desc:
+      'A special application of the `pivot()` function that automatically aligns fields within each input table that have the same timestamp.',
+    example: 'influxFieldsAsCols()',
+    category: 'Transformations',
+    link:
+      'https://docs.influxdata.com/flux/latest/functions/transformations/influxfieldsascols',
   },
   {
     name: 'integral',
@@ -651,7 +762,7 @@ export const functions: FluxToolbarFunction[] = [
       'https://docs.influxdata.com/flux/latest/functions/transformations/limit',
   },
   {
-    name: 'linearBuckets',
+    name: 'linearBins',
     args: [
       {
         name: 'start',
@@ -660,29 +771,28 @@ export const functions: FluxToolbarFunction[] = [
       },
       {
         name: 'width',
-        desc: 'The distance between subsequent bucket values.',
+        desc: 'The distance between subsequent bin values.',
         type: 'Float',
       },
       {
         name: 'count',
-        desc: 'The number of buckets to create.',
+        desc: 'The number of bins to create.',
         type: 'Integer',
       },
       {
         name: 'infinity',
         desc:
-          'When `true`, adds an additional bucket with a value of positive infinity. Defaults to `true`.',
+          'When `true`, adds an additional bin with a value of positive infinity. Defaults to `true`.',
         type: 'Boolean',
       },
     ],
     desc: 'Generates a list of linearly separated floats.',
-    example: 'linearBuckets(start: 0.0, width: 5.0, count: 20, infinity: true)',
+    example: 'linearBins(start: 0.0, width: 5.0, count: 20, infinity: true)',
     category: 'Miscellaneous',
-    link:
-      'https://docs.influxdata.com/flux/latest/functions/misc/linearbuckets',
+    link: 'https://docs.influxdata.com/flux/latest/functions/misc/linearbins',
   },
   {
-    name: 'logarithmicBuckets',
+    name: 'logarithmicBins',
     args: [
       {
         name: 'start',
@@ -691,27 +801,108 @@ export const functions: FluxToolbarFunction[] = [
       },
       {
         name: 'factor',
-        desc: 'The multiplier applied to each subsequent bucket.',
+        desc: 'The multiplier applied to each subsequent bin.',
         type: 'Float',
       },
       {
         name: 'count',
-        desc: 'The number of buckets to create.',
+        desc: 'The number of bins to create.',
         type: 'Integer',
       },
       {
         name: 'infinity',
         desc:
-          'When `true`, adds an additional bucket with a value of positive infinity. Defaults to `true`.',
+          'When `true`, adds an additional bin with a value of positive infinity. Defaults to `true`.',
         type: 'Boolean',
       },
     ],
     desc: 'Generates a list of exponentially separated floats.',
     example:
-      'logarithmicBuckets(start: 1.0, factor: 2.0, count: 10, infinty: true)',
+      'logarithmicBins(start: 1.0, factor: 2.0, count: 10, infinty: true)',
     category: 'Miscellaneous',
     link:
-      'https://docs.influxdata.com/flux/latest/functions/misc/logarithmicbuckets',
+      'https://docs.influxdata.com/flux/latest/functions/misc/logarithmicbins',
+  },
+  {
+    name: 'lowestAverage',
+    args: [
+      {
+        name: 'n',
+        desc: 'Number of records to return.',
+        type: 'Integer',
+      },
+      {
+        name: 'columns',
+        desc: 'List of columns by which to sort. Default is `["_value"]`.',
+        type: 'Array of Strings',
+      },
+      {
+        name: 'groupColumns',
+        desc:
+          'The columns on which to group before performing the aggregation. Default is `[]`.',
+        type: 'Array of Strings',
+      },
+    ],
+    desc:
+      'Returns the bottom `n` records from all groups using the average of each group.',
+    example: 'lowestAverage(n:10, groupColumns: ["host"])',
+    category: 'Selectors',
+    link:
+      'https://docs.influxdata.com/flux/latest/functions/transformations/selectors/lowestaverage',
+  },
+  {
+    name: 'lowestCurrent',
+    args: [
+      {
+        name: 'n',
+        desc: 'Number of records to return.',
+        type: 'Integer',
+      },
+      {
+        name: 'columns',
+        desc: 'List of columns by which to sort. Default is `["_value"]`.',
+        type: 'Array of Strings',
+      },
+      {
+        name: 'groupColumns',
+        desc:
+          'The columns on which to group before performing the aggregation. Default is `[]`.',
+        type: 'Array of Strings',
+      },
+    ],
+    desc:
+      'Returns the bottom `n` records from all groups using the last value of each group.',
+    example: 'lowestCurrent(n:10, groupColumns: ["host"])',
+    category: 'Selectors',
+    link:
+      'https://docs.influxdata.com/flux/latest/functions/transformations/selectors/lowestcurrent',
+  },
+  {
+    name: 'lowestMin',
+    args: [
+      {
+        name: 'n',
+        desc: 'Number of records to return.',
+        type: 'Integer',
+      },
+      {
+        name: 'columns',
+        desc: 'List of columns by which to sort. Default is `["_value"]`.',
+        type: 'Array of Strings',
+      },
+      {
+        name: 'groupColumns',
+        desc:
+          'The columns on which to group before performing the aggregation. Default is `[]`.',
+        type: 'Array of Strings',
+      },
+    ],
+    desc:
+      'Returns the bottom `n` records from all groups using the maximum of each group.',
+    example: 'lowestMin(n:10, groupColumns: ["host"])',
+    category: 'Selectors',
+    link:
+      'https://docs.influxdata.com/flux/latest/functions/transformations/selectors/lowestmin',
   },
   {
     name: 'map',
@@ -1052,7 +1243,7 @@ export const functions: FluxToolbarFunction[] = [
         type: 'Function',
       },
       {
-        name: 'label',
+        name: 'column',
         desc:
           'The name of the column added to each record that contains the incremented state count.',
         type: 'String',
@@ -1060,7 +1251,7 @@ export const functions: FluxToolbarFunction[] = [
     ],
     desc:
       'Computes the number of consecutive records in a given state and stores the increment in a new column.',
-    example: 'stateCount(fn: (r) => r._field == "state", label: "stateCount")',
+    example: 'stateCount(fn: (r) => r._field == "state", column: "stateCount")',
     category: 'Transformations',
     link:
       'https://docs.influxdata.com/flux/latest/functions/transformations/statecount',
@@ -1075,7 +1266,7 @@ export const functions: FluxToolbarFunction[] = [
         type: 'Function',
       },
       {
-        name: 'label',
+        name: 'column',
         desc:
           'Name of the column added to each record that contains the incremented state duration.',
         type: 'String',
@@ -1089,7 +1280,7 @@ export const functions: FluxToolbarFunction[] = [
     desc:
       'Computes the duration of a given state and stores the increment in a new column.',
     example:
-      'stateDuration(fn: (r) => r._measurement == "state", lable: "stateDuration", unit: 1s)',
+      'stateDuration(fn: (r) => r._measurement == "state", column: "stateDuration", unit: 1s)',
     category: 'Transformations',
     link:
       'https://docs.influxdata.com/flux/latest/functions/transformations/stateduration',
@@ -1341,18 +1532,18 @@ export const functions: FluxToolbarFunction[] = [
         type: 'Function',
       },
       {
-        name: 'timeCol',
+        name: 'timeColumn',
         desc: 'The column containing time. Defaults to `"_time"`.',
         type: 'String',
       },
       {
-        name: 'startCol',
+        name: 'startColumn',
         desc:
           'The column containing the window start time. Defaults to `"_start"`.',
         type: 'String',
       },
       {
-        name: 'stopCol',
+        name: 'stopColumn',
         desc:
           'The column containing the window stop time. Defaults to `"_stop"`.',
         type: 'String',
@@ -1361,7 +1552,7 @@ export const functions: FluxToolbarFunction[] = [
     desc:
       'Groups records based on a time value. New columns are added to uniquely identify each window. Those columns are added to the group key of the output tables. A single input record will be placed into zero or more output tables, depending on the specific windowing function.',
     example:
-      'window(every: 5m, period: 5m, offset: 12h, timeCol: "_time", startCol: "_start", stopCol: "_stop")',
+      'window(every: 5m, period: 5m, offset: 12h, timeColumn: "_time", startColumn: "_start", stopColumn: "_stop")',
     category: 'Transformations',
     link:
       'https://docs.influxdata.com/flux/latest/functions/transformations/window',

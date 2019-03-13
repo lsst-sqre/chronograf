@@ -18,6 +18,7 @@ import {
 } from 'src/shared/graphs/helpers'
 import getLastValues from 'src/shared/parsing/lastValues'
 import {ErrorHandling} from 'src/shared/decorators/errors'
+import {isTruncatedNumber, toFixed} from 'src/shared/utils/decimalPlaces'
 
 // Constants
 import {DYGRAPH_CONTAINER_V_MARGIN} from 'src/shared/constants'
@@ -42,11 +43,12 @@ interface Props {
   dataType: DataType
   onUpdateCellColors?: (bgColor: string, textColor: string) => void
   onUpdateVisType?: (cell: CellType) => Promise<void>
+  fluxTablesToSingleStat?: typeof manager.fluxTablesToSingleStat
 }
 
 interface State {
   lastValues?: {
-    values: number[]
+    values: string[] | number[]
     series: string[]
   }
   isValidData: boolean
@@ -60,6 +62,7 @@ class SingleStat extends PureComponent<Props, State> {
     prefix: '',
     suffix: '',
     onUpdateCellColors: NOOP,
+    fluxTablesToSingleStat: manager.fluxTablesToSingleStat,
   }
 
   private isComponentMounted: boolean
@@ -68,13 +71,15 @@ class SingleStat extends PureComponent<Props, State> {
     getLastValues,
     isInluxQLDataEqual
   )
-  private memoizedFluxTablesToSingleStat = memoizeOne(
-    manager.fluxTablesToSingleStat,
-    isFluxDataEqual
-  )
+  private memoizedFluxTablesToSingleStat: typeof manager.fluxTablesToSingleStat
 
   constructor(props: Props) {
     super(props)
+
+    this.memoizedFluxTablesToSingleStat = memoizeOne(
+      props.fluxTablesToSingleStat,
+      isFluxDataEqual
+    )
 
     this.state = {isValidData: true}
   }
@@ -138,7 +143,7 @@ class SingleStat extends PureComponent<Props, State> {
         firstAlphabeticalSeriesName
       )
 
-      return values[firstAlphabeticalIndex]
+      return Number(values[firstAlphabeticalIndex])
     }
   }
 
@@ -151,8 +156,8 @@ class SingleStat extends PureComponent<Props, State> {
 
     let roundedValue = `${this.lastValue}`
 
-    if (decimalPlaces.isEnforced && _.isNumber(this.lastValue)) {
-      roundedValue = this.lastValue.toFixed(decimalPlaces.digits)
+    if (isTruncatedNumber(this.lastValue, decimalPlaces)) {
+      roundedValue = toFixed(this.lastValue, decimalPlaces)
     }
 
     return this.formatToLocale(+roundedValue)
@@ -196,7 +201,7 @@ class SingleStat extends PureComponent<Props, State> {
         series,
         firstAlphabeticalSeriesName
       )
-      lastValue = values[firstAlphabeticalIndex]
+      lastValue = Number(values[firstAlphabeticalIndex])
     }
 
     const {bgColor, textColor} = generateThresholdsListHexs({

@@ -3,7 +3,6 @@ import moment from 'moment'
 import classnames from 'classnames'
 import React, {Component, MouseEvent, CSSProperties} from 'react'
 import {Grid, AutoSizer, InfiniteLoader} from 'react-virtualized'
-import {color} from 'd3-color'
 
 import FancyScrollbar from 'src/shared/components/FancyScrollbar'
 import ExpandableMessage from 'src/logs/components/expandable_message/ExpandableMessage'
@@ -11,7 +10,7 @@ import LogsMessage from 'src/logs/components/logs_message/LogsMessage'
 import LoadingStatus from 'src/logs/components/loading_status/LoadingStatus'
 import {getDeep} from 'src/utils/wrappers'
 
-import {colorForSeverity} from 'src/logs/utils/colors'
+import {colorForSeverity, getBrighterColor} from 'src/logs/utils/colors'
 import {
   ROW_HEIGHT,
   calculateRowCharWidth,
@@ -52,6 +51,7 @@ import {
 import {INITIAL_LIMIT} from 'src/logs/actions'
 
 interface Props {
+  queryCount: number
   filters: Filter[]
   data: TableData
   isTruncated: boolean
@@ -86,7 +86,6 @@ interface State {
   isMessageVisible: boolean
   visibleColumnsCount: number
   searchPattern: string
-  infiniteLoaderQueryCount: number
 }
 
 const calculateScrollTop = scrollToRow => {
@@ -168,7 +167,6 @@ class LogsTable extends Component<Props, State> {
       scrollTop: 0,
       scrollLeft: 0,
       currentMessageWidth: 0,
-      infiniteLoaderQueryCount: 0,
       isMessageVisible,
       visibleColumnsCount,
     }
@@ -302,6 +300,7 @@ class LogsTable extends Component<Props, State> {
       onSectionRendered: this.handleRowRender(onRowsRendered),
       columnCount,
       columnWidth: this.getColumnWidth,
+      overscanRowCount: 50,
       ref: (ref: Grid) => {
         registerChild(ref)
         this.grid = ref
@@ -353,33 +352,11 @@ class LogsTable extends Component<Props, State> {
   }
 
   private loadMoreAboveRows = async () => {
-    try {
-      this.incrementLoaderQueryCount()
-      await this.props.fetchNewer()
-    } finally {
-      this.decrementLoaderQueryCount()
-    }
+    await this.props.fetchNewer()
   }
 
   private loadMoreBelowRows = async () => {
-    try {
-      this.incrementLoaderQueryCount()
-      await this.props.fetchMore()
-    } finally {
-      this.decrementLoaderQueryCount()
-    }
-  }
-
-  private incrementLoaderQueryCount() {
-    this.setState(({infiniteLoaderQueryCount}) => ({
-      infiniteLoaderQueryCount: infiniteLoaderQueryCount + 1,
-    }))
-  }
-
-  private decrementLoaderQueryCount() {
-    this.setState(({infiniteLoaderQueryCount}) => ({
-      infiniteLoaderQueryCount: infiniteLoaderQueryCount - 1,
-    }))
+    await this.props.fetchMore()
   }
 
   private rowCount = (): number => {
@@ -615,9 +592,7 @@ class LogsTable extends Component<Props, State> {
     level: SeverityLevelOptions
   ): CSSProperties => {
     const severityColor = colorForSeverity(colorName, level)
-    const brightSeverityColor = color(severityColor)
-      .brighter(0.5)
-      .hex()
+    const brightSeverityColor = getBrighterColor(0.5, severityColor)
 
     return {
       background: `linear-gradient(45deg, ${severityColor}, ${brightSeverityColor}`,
@@ -664,7 +639,7 @@ class LogsTable extends Component<Props, State> {
   }
 
   private get isLoadingMore(): boolean {
-    return this.state.infiniteLoaderQueryCount > 0
+    return this.props.queryCount > 0
   }
 
   private get scrollLoadingIndicator(): JSX.Element {
