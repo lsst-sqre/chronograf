@@ -5,6 +5,7 @@ import classnames from 'classnames'
 import {connect} from 'react-redux'
 import moment from 'moment'
 import {ColumnSizer, SizedColumnProps, AutoSizer} from 'react-virtualized'
+import Markdown from 'react-markdown'
 
 // Components
 import {MultiGrid, PropsMultiGrid} from 'src/shared/components/MultiGrid'
@@ -574,7 +575,7 @@ class TableGraph extends PureComponent<Props, State> {
         onMouseOver={this.handleHover}
         title={cellContents}
       >
-        {cellContents}
+        <Markdown source={cellContents}/>
       </div>
     )
   }
