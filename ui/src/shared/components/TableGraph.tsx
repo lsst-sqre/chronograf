@@ -581,7 +581,7 @@ class TableGraph extends PureComponent<Props, State> {
         data-column-index={columnIndex}
         data-row-index={rowIndex}
         onMouseOver={this.handleHover}
-        title={cellContents}
+        title=''
       >
         <Markdown source={cellContents}/>
       </div>
