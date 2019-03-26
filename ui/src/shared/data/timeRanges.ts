@@ -22,15 +22,6 @@ export const timeRanges: TimeRangeOption[] = [
     menuOption: 'Past 1h',
   },
   {
-    defaultGroupBy: '5m',
-    seconds: 43200,
-    inputValue: 'Past 12h',
-    lower: 'now() - 12h',
-    lowerFlux: '-12h',
-    upper: null,
-    menuOption: 'Past 12h',
-  },
-  {
     defaultGroupBy: '10m',
     seconds: 86400,
     inputValue: 'Past 24h',
@@ -49,7 +40,7 @@ export const timeRanges: TimeRangeOption[] = [
     menuOption: 'Past 7d',
   },
   {
-    defaultGroupBy: '6h',
+    defaultGroupBy: '12h',
     seconds: 2592000,
     inputValue: 'Past 30d',
     lower: nowMinus30d,
@@ -57,15 +48,24 @@ export const timeRanges: TimeRangeOption[] = [
     upper: null,
     menuOption: 'Past 30d',
   },
+{
+    defaultGroupBy: '1d',
+    seconds: 22118400,
+    inputValue: 'Past year',
+    lower: 'now()-356d',
+    lowerFlux: '-356d',
+    upper: null,
+    menuOption: 'Past year',
+  },
 ]
 
 export const FORMAT_INFLUXQL = 'influxql'
 
 export const DEFAULT_TIME_RANGE = {
   upper: null,
-  lower: 'now() - 12h',
-  lowerFlux: '-12h',
-  seconds: 43200,
+  lower: nowMinus30d,
+  lowerFlux: '-30d',
+  seconds: 2592000,
   format: FORMAT_INFLUXQL,
 }
 
